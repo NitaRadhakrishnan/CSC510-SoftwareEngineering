@@ -1,0 +1,110 @@
+
+The following is the process the bot performed to arrived at the best model for the provided dataset.
+***************************MODEL SELECTION PROCESS**********************
+Step 1: Check if the target is present in the column names of the dataset
+Step 2: Check if the columns are numerical or categorical. If categorical, factorize.
+      The dataset is of type - Categorical
+      The dataset contains column names (after pre-processing stage 1): ['Datesid', 'Category', 'Descriptid', 'DayOfWeekid', 'PdDistrictid', 'Resolutionid', 'Addressid', 'X', 'Y']DatesidCategoryDescriptidDayOfWeekidPdDistrictidResolutionidAddressidXY
+Step 3: Spliting the target column from the dataset
+Step 4: Preprocessing using sklearn package
+Step 5: Spliting the training and testing data in 80:20 ratio
+Step 6: Training and testing with various models
+            Accuracy of Linear Support Vector Classifier is 30.333333333333336
+            Accuracy of KNN Classifier is 37.5
+            Accuracy of Decision Tree Classifier - GINI is 90.0
+            Accuracy of Decision Tree Classifier - ENTROPY is 89.33333333333333
+            Multinomial NB is throwing exception
+            Accuracy of Bernoulli NB is 35.66666666666667
+            Accuracy of GaussianNB is 30.666666666666664
+            Accuracy of AdaBoost Classifier is 31.5
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 61.83333333333333
+Step 7: Finding the best model:
+      Best Model(s):
+          Decision Tree Classifier - GINI
+***Performing n-gram feature classification on each Categorical column to check if there is scope of better accuracy model***
+        Model accuracies when ngram based classification is performed on column Dates
+            Accuracy of Linear Support Vector Classifier is 27.166666666666668
+            Accuracy of KNN Classifier is 20.5
+            Accuracy of Decision Tree Classifier - GINI is 25.333333333333336
+            Accuracy of Decision Tree Classifier - ENTROPY is 23.166666666666664
+            Accuracy of Multinomial NB is 27.166666666666668
+            Accuracy of Bernoulli NB is 23.666666666666668
+            Accuracy of GaussianNB is 4.666666666666667
+            Accuracy of AdaBoost Classifier is 27.666666666666668
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 27.833333333333332
+        Best model when ngram based classification is performed on column Dates
+            No decent model to satisfy this dataset
+
+        Model accuracies when ngram based classification is performed on column Descript
+            Accuracy of Linear Support Vector Classifier is 98.0
+            Accuracy of KNN Classifier is 96.33333333333334
+            Accuracy of Decision Tree Classifier - GINI is 96.66666666666667
+            Accuracy of Decision Tree Classifier - ENTROPY is 97.33333333333334
+            Accuracy of Multinomial NB is 95.16666666666667
+            Accuracy of Bernoulli NB is 90.0
+            Accuracy of GaussianNB is 92.83333333333333
+            Accuracy of AdaBoost Classifier is 46.166666666666664
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 97.66666666666667
+        Best model when ngram based classification is performed on column Descript
+            Linear Support Vector Classifier
+
+        Model accuracies when ngram based classification is performed on column DayOfWeek
+            Accuracy of Linear Support Vector Classifier is 27.666666666666668
+            Accuracy of KNN Classifier is 21.666666666666668
+            Accuracy of Decision Tree Classifier - GINI is 27.666666666666668
+            Accuracy of Decision Tree Classifier - ENTROPY is 27.666666666666668
+            Accuracy of Multinomial NB is 27.666666666666668
+            Accuracy of Bernoulli NB is 27.666666666666668
+            Accuracy of GaussianNB is 0.16666666666666669
+            Accuracy of AdaBoost Classifier is 27.666666666666668
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 27.666666666666668
+        Best model when ngram based classification is performed on column DayOfWeek
+            No decent model to satisfy this dataset
+
+        Model accuracies when ngram based classification is performed on column PdDistrict
+            Accuracy of Linear Support Vector Classifier is 28.166666666666668
+            Accuracy of KNN Classifier is 25.666666666666664
+            Accuracy of Decision Tree Classifier - GINI is 28.166666666666668
+            Accuracy of Decision Tree Classifier - ENTROPY is 28.166666666666668
+            Accuracy of Multinomial NB is 28.166666666666668
+            Accuracy of Bernoulli NB is 28.166666666666668
+            Accuracy of GaussianNB is 0.16666666666666669
+            Accuracy of AdaBoost Classifier is 28.166666666666668
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 28.166666666666668
+        Best model when ngram based classification is performed on column PdDistrict
+            No decent model to satisfy this dataset
+
+        Model accuracies when ngram based classification is performed on column Resolution
+            Accuracy of Linear Support Vector Classifier is 35.0
+            Accuracy of KNN Classifier is 34.833333333333336
+            Accuracy of Decision Tree Classifier - GINI is 35.0
+            Accuracy of Decision Tree Classifier - ENTROPY is 35.0
+            Accuracy of Multinomial NB is 28.833333333333332
+            Accuracy of Bernoulli NB is 35.0
+            Accuracy of GaussianNB is 0.5
+            Accuracy of AdaBoost Classifier is 35.0
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 35.0
+        Best model when ngram based classification is performed on column Resolution
+            No decent model to satisfy this dataset
+
+        Model accuracies when ngram based classification is performed on column Address
+            Accuracy of Linear Support Vector Classifier is 26.833333333333332
+            Accuracy of KNN Classifier is 26.666666666666668
+            Accuracy of Decision Tree Classifier - GINI is 27.166666666666668
+            Accuracy of Decision Tree Classifier - ENTROPY is 28.000000000000004
+            Accuracy of Multinomial NB is 28.833333333333332
+            Accuracy of Bernoulli NB is 26.5
+            Accuracy of GaussianNB is 9.0
+            Accuracy of AdaBoost Classifier is 27.500000000000004
+            XGB Classifier is throwing exception
+            Accuracy of Random Forest Classifier is 29.166666666666668
+        Best model when ngram based classification is performed on column Address
+            No decent model to satisfy this dataset
+
+        Using n-gram feature classification on column Descript use Linear Support Vector Classifier to get the best accuracy
