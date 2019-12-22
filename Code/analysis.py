@@ -1,181 +1,205 @@
+""" Python program for Usecase 2 - Analysis """
 import pandas as pd
 from scipy.stats import shapiro
 from scipy.stats import normaltest
 from scipy.stats import anderson
 from tabulate import tabulate
 import commonFunctions
-       
-# FUNCTION TO FIND CORRELATION BETWEEN ALL VARIABLES IN THE DATASET     
-def correlations(data, method, columns, f):
-    correlations = data[data.columns].corr(method=method)
+
+
+def correlations(data, method, columns, f_name):
+    """ FUNCTION TO FIND CORRELATION BETWEEN ALL VARIABLES IN THE DATASET """
+    corr_var = data[data.columns].corr(method=method)
     for i in range(len(columns) - 1):
         for j in range(i + 1, len(columns)):
-            if abs(correlations[columns[i]][columns[j]]) < 0.5:
-                f.writelines("\nColumns " + columns[i] + " and " + columns[j] +
-                             " have low correlation between them. The correlation value is " +
-                             str(correlations[columns[i]][columns[j]]))
-            elif abs(correlations[columns[i]][columns[j]]) > 0.98:
-                f.writelines("\nColumns " + columns[i] + " and " + columns[j] +
-                             " have very high correlation between them. The correlation value is " +
-                             str(correlations[columns[i]][columns[j]]))
+            if abs(corr_var[columns[i]][columns[j]]) < 0.5:
+                f_name.writelines("\nColumns " + columns[i] + " and " + columns[j] +
+                                  " have low correlation between them. The correlation value is " +
+                                  str(corr_var[columns[i]][columns[j]]))
+            elif abs(corr_var[columns[i]][columns[j]]) > 0.98:
+                f_name.writelines("\nColumns " + columns[i] + " and " + columns[j] +
+                                  " have very high correlation between them. "
+                                  "The correlation value is " +
+                                  str(corr_var[columns[i]][columns[j]]))
             else:
-                f.writelines("\nColumns " + columns[i] + " and " + columns[j] +
-                             " have strong correlation between them. The correlation value is "
-                             + str(correlations[columns[i]][columns[j]]))
-    f.writelines(
-        "\n---------------------------------------------------------------------------------------------------------------------------------------")
+                f_name.writelines("\nColumns " + columns[i] + " and " + columns[j] +
+                                  " have strong correlation between them. "
+                                  "The correlation value is "
+                                  + str(corr_var[columns[i]][columns[j]]))
+    f_name.writelines(
+        "\n---------------------------------------------------------------------------"
+        "---------------------------------"
+        "---------------------------")
 
-    
-#FUNCTION TO WRITE ALL EDA RESULTS TO FILE AND RETURN FILE  
-def analysis(f, data, target, columns):
 
+def analysis(f_name, data, target, columns):
+    """ FUNCTION TO WRITE ALL EDA RESULTS TO FILE AND RETURN FILE """
     # Exploratory data analysis:
-    f.writelines("\nEXPLORATORY DATA ANALYSIS:")
-    
-    # Checking for Value counts if dataset is categorical 
+    f_name.writelines("\nEXPLORATORY DATA ANALYSIS:")
+    # Checking for Value counts if dataset is categorical
     for col in columns:
-        if not(data[col].dtypes=='float64' or data[col].dtypes=='int64'):
-            ValueCounts(f, data, col, columns)
-    
-    # Writes the type of the data set (Categorical/Numerical) in the text file    
-    data,columns,cat_flag = commonFunctions.checkAndConvertIfCategorical(data, target)
+        if not (data[col].dtypes == 'float64' or data[col].dtypes == 'int64'):
+            value_counts(f_name, data, col)
+    # Writes the type of the data set (Categorical/Numerical) in the text file
+    data, columns, cat_flag = commonFunctions.checkAndConvertIfCategorical(data, target)
     if cat_flag == 0:
-        f.writelines("\n      The dataset is of type - Numerical")
+        f_name.writelines("\n      The dataset is of type - Numerical")
     else:
-        f.writelines("\n      The dataset is of type - Categorical")
-        
-    # Details about the datset - writes summary statistics and other information about the dataset 
-    dataInfo(f, data, target, columns)
-    
-    #Mean, Median and Mode - writes the mean, median and mode for each column of the dataset
-    MeanMedianMode(f, data, target, columns)
-    
-    # Correlation - writes the correlation between variables 
-    f.writelines("\n\nCorrelation:\n")
-    f.writelines("\nPearson Correlation test:")
-    correlations(data, 'pearson', columns, f)
+        f_name.writelines("\n      The dataset is of type - Categorical")
+    # Details about the datset - writes summary statistics and other information about the dataset
+    data_info(f_name, data)
+    # Mean, Median and Mode - writes the mean, median and mode for each column of the dataset
+    mean_median_mode(f_name, data, columns)
+    # Correlation - writes the correlation between variables
+    f_name.writelines("\n\nCorrelation:\n")
+    f_name.writelines("\nPearson Correlation test:")
+    correlations(data, 'pearson', columns, f_name)
 
-    f.writelines("\n\nSpearman's rank Correlation test:")
-    correlations(data, 'spearman', columns, f)
+    f_name.writelines("\n\nSpearman's rank Correlation test:")
+    correlations(data, 'spearman', columns, f_name)
 
-    f.writelines("\n\nKendall's rank Correlation test:")
-    correlations(data, 'kendall', columns, f)
-    
-    #Normality Tests -  checks for normality of the data set provided by the user 
-    Normality(f, data, target, columns)
+    f_name.writelines("\n\nKendall's rank Correlation test:")
+    correlations(data, 'kendall', columns, f_name)
 
-#FUNCTION TO DISPLAY INFORMATION ABOUT DATASET 
-def dataInfo(f, data, target, columns):
-    f.writelines("\n\nDATA INFORMATION\n\n")   
+    # Normality Tests -  checks for normality of the data set provided by the user
+    normality(f_name, data, target, columns)
+
+
+def data_info(f_name, data):
+    """ FUNCTION TO DISPLAY INFORMATION ABOUT DATASET """
+    f_name.writelines("\n\nDATA INFORMATION\n\n")
     # number of null values per column
-    f.writelines("\n\nNo. of nulls in the columns:\n")
-    f.write(str(data.isnull().sum()))
-    # Information about the data: 
-    f.writelines("\nInformation about the data:")
-    f.writelines("\n\nType of the data: "+str(type(data)))
-    f.writelines("\n\nSummary statistics of the data\n\n")
-    f.writelines(str(data.describe()))
-    f.writelines("\n---------------------------------------------------------------------------------------------------------------------------------------")
-     
+    f_name.writelines("\n\nNo. of nulls in the columns:\n")
+    f_name.write(str(data.isnull().sum()))
+    # Information about the data:
+    f_name.writelines("\nInformation about the data:")
+    f_name.writelines("\n\nType of the data: " + str(type(data)))
+    f_name.writelines("\n\nSummary statistics of the data\n\n")
+    f_name.writelines(str(data.describe()))
+    f_name.writelines("\n-----------------------------------------"
+                      "-------------------------------------------"
+                      "---------------------------------------------------")
 
-#FUNCTION TO FIND MEAN, MEDIAN, MODE OF EVERY COLUMN
-def MeanMedianMode(f, data, target, columns):
+
+def mean_median_mode(f_name, data, columns):
+    """ FUNCTION TO FIND MEAN, MEDIAN, MODE OF EVERY COLUMN """
     # Mean, median and mode of each column:
-    f.writelines("\n\nMEAN, MEDIAN AND MODE:")
+    f_name.writelines("\n\nMEAN, MEDIAN AND MODE:")
     for col in columns:
-        f.writelines("\n" + col)
-        f.writelines("\nMean= " + str(data[col].mean()))
-        f.writelines("     Median= " + str(data[col].median()))
-        f.writelines("     Mode= " + str(mode) for mode in data[col].mode())
-    f.writelines("\n---------------------------------------------------------------------------------------------------------------------------------------")
+        f_name.writelines("\n" + col)
+        f_name.writelines("\nMean= " + str(data[col].mean()))
+        f_name.writelines("     Median= " + str(data[col].median()))
+        f_name.writelines("     Mode= " + str(mode) for mode in data[col].mode())
+    f_name.writelines("\n-------------------------------------------------------"
+                      "---------------------------------------------------------"
+                      "-----------------------")
 
-# FUNCTION TO CALCULATE VALUE COUNTS OF CATEGORICAL COLUMNS 
-def ValueCounts(f, data, target, columns):
-    # To view summary aggregates 
-    f.writelines("\n\nVALUE COUNTS:\n\n")
-    dataf= pd.DataFrame(list(zip(data[target].value_counts().index,data[target].value_counts())), columns=['Column','counts'])
-    f.write(tabulate(dataf, tablefmt="grid", headers="keys", showindex=False))
-    f.writelines("\n---------------------------------------------------------------------------------------------------------------------------------------")
 
-#FUNCTION TO TEST NORMALITY OF THE DATASET
-def Normality(f, data, target, columns):    
+def value_counts(f_name, data, target):
+    """ FUNCTION TO CALCULATE VALUE COUNTS OF CATEGORICAL COLUMNS """
+    # To view summary aggregates
+    f_name.writelines("\n\nVALUE COUNTS:\n\n")
+    data_f = pd.DataFrame(list(zip(data[target].value_counts().index, data[target].value_counts())),
+                          columns=['Column', 'counts'])
+    f_name.write(tabulate(data_f, tablefmt="grid", headers="keys", showindex=False))
+    f_name.writelines("\n--------------------------------------------"
+                      "----------------------------------------------"
+                      "---------------------------------------------")
+
+
+def normality(f_name, data, target, columns):
+    """ FUNCTION TO TEST NORMALITY OF THE DATASET """
     # Normality Test
-    f.writelines("\n\nNormality Tests:")
+    f_name.writelines("\n\nNormality Tests:")
     # Shapiro-Wilk test
-    ShapiroWilkTest(f, data, target, columns)
-    #D'Agostino's K^2 Test 
-    Agostino(f, data, target, columns)
-    #Anderson-Darling Test
-    AndersonDarlingTest(f, data, target, columns)
-    
-def ShapiroWilkTest(f, data, target, columns):
-    f.writelines("\nShapiro-Wilk test - Gaussian distribution test\n")
-    f.writelines("Tests whether a data sample has a Gaussian distribution.\n")
-    f.writelines("Hypothesis: the sample has a Gaussian distribution\n")
-    ls = []
-    for i in columns:
-        if i == target:
+    shapiro_wilk_test(f_name, data, target, columns)
+    # D'Agostino's K^2 Test
+    agostino(f_name, data, target, columns)
+    # Anderson-Darling Test
+    anderson_darling_test(f_name, data, target, columns)
+
+
+def shapiro_wilk_test(f_name, data, target, columns):
+    """ Shapiro Wilk Test """
+    f_name.writelines("\nShapiro-Wilk test - Gaussian distribution test\n")
+    f_name.writelines("Tests whether a data sample has a Gaussian distribution.\n")
+    f_name.writelines("Hypothesis: the sample has a Gaussian distribution\n")
+    temp_list = []
+    for col in columns:
+        if col == target:
             continue
-        stat, p = shapiro(data[i])
-        if p > 0.05:
+        stat, prob = shapiro(data[col])
+        if prob > 0.05:
             result = "Accepted"
         else:
             result = "Rejected"
-        ls.append([i, stat, p, result])
-    dataf = pd.DataFrame(ls, columns=["Column", "Test Statistics", "p-Value", "Null Hypothesis"])
-    f.write(tabulate(dataf, tablefmt="grid", headers="keys", showindex=False))
-    f.writelines(
-        "\n---------------------------------------------------------------------------------------------------------------------------------------")
+        temp_list.append([col, stat, prob, result])
+    data_f = pd.DataFrame(temp_list, columns=["Column", "Test Statistics", "p-Value",
+                                              "Null Hypothesis"])
+    f_name.write(tabulate(data_f, tablefmt="grid", headers="keys", showindex=False))
+    f_name.writelines(
+        "\n---------------------------------------------------------"
+        "-----------------------------------------------------------"
+        "-------------------")
 
-    
-def Agostino(f, data, target, columns):    
-    f.writelines("\n\nD'Agostino's K^2 Test - Gaussian distribution test\n")
-    f.writelines("Tests whether a data sample has a Gaussian distribution.\n")
-    f.writelines("Hypothesis: the sample has a Gaussian distribution\n")
-    ls = []
-    for i in columns:
-        if i == target:
+
+def agostino(f_name, data, target, columns):
+    """ agostino k^2 test """
+    f_name.writelines("\n\nD'Agostino's K^2 Test - Gaussian distribution test\n")
+    f_name.writelines("Tests whether a data sample has a Gaussian distribution.\n")
+    f_name.writelines("Hypothesis: the sample has a Gaussian distribution\n")
+    temp_list = []
+    for col in columns:
+        if col == target:
             continue
-        stat, p = normaltest(data[i])
-        if p > 0.05:
+        stat, prob = normaltest(data[col])
+        if prob > 0.05:
             result = "Accepted"
         else:
             result = "Rejected"
-        ls.append([i, stat, p, result])
-    dataf = pd.DataFrame(ls, columns=["Column", "Test Statistics", "p-Value", "Null Hypothesis"])
-    f.write(tabulate(dataf, tablefmt="grid", headers="keys", showindex=False))
-    f.writelines(
-        "\n---------------------------------------------------------------------------------------------------------------------------------------")
+        temp_list.append([col, stat, prob, result])
+    data_f = pd.DataFrame(temp_list, columns=["Column", "Test Statistics", "p-Value",
+                                              "Null Hypothesis"])
+    f_name.write(tabulate(data_f, tablefmt="grid", headers="keys", showindex=False))
+    f_name.writelines(
+        "\n--------------------------------------------------"
+        "----------------------------------------------------"
+        "---------------------------------")
 
-def AndersonDarlingTest(f, data, target, columns):
-    f.writelines("\n\nAnderson-Darling Test - Gaussian distribution test\n")
-    f.writelines("Tests whether a data sample has a Gaussian distribution.\n")
-    f.writelines("Hypothesis: the sample has a Gaussian distribution\n")
-    for i in columns:
-        if i == target:
+
+def anderson_darling_test(f_name, data, target, columns):
+    """ anderson darling test """
+    f_name.writelines("\n\nAnderson-Darling Test - Gaussian distribution test\n")
+    f_name.writelines("Tests whether a data sample has a Gaussian distribution.\n")
+    f_name.writelines("Hypothesis: the sample has a Gaussian distribution\n")
+    for col in columns:
+        if col == target:
             continue
-        result = anderson(data[i])
-        f.writelines('\n' + i + ':\nStatistic: ' + str(result.statistic) + '\n')
+        result = anderson(data[col])
+        f_name.writelines('\n' + col + ':\nStatistic: ' + str(result.statistic) + '\n')
         for j in range(len(result.critical_values)):
-            sl, cv = result.significance_level[j], result.critical_values[j]
+            sig_lev, critical_val = result.significance_level[j], result.critical_values[j]
             if result.statistic < result.critical_values[j]:
-                f.writelines(str(sl) + ':' + str(cv) + ' Null Hypothesis - Accepted\n')
+                f_name.writelines(str(sig_lev) + ':' + str(critical_val) +
+                                  ' Null Hypothesis - Accepted\n')
             else:
-                f.writelines(str(sl) + ':' + str(cv) + ' Null Hypothesis - Rejected\n')
+                f_name.writelines(str(sig_lev) + ':' + str(critical_val) +
+                                  ' Null Hypothesis - Rejected\n')
 
-    f.writelines(
-        "\n---------------------------------------------------------------------------------------------------------------------------------------")
+    f_name.writelines(
+        "\n---------------------------------------------------"
+        "-----------------------------------------------------"
+        "-------------------------------")
 
-def analysisInteraction(path,target):
-    f = open("Analysis.txt", "w")
+
+def analysis_interaction(path, target):
+    """ Interactive function """
+    f_name = open("Analysis.txt", "w")
     data = pd.read_csv(path, sep=',', header=0)
     columns = list(data.columns)
-    flag = commonFunctions.targetCheck(target,columns)
-    if flag!=1:
+    flag = commonFunctions.targetCheck(target, columns)
+    if flag != 1:
         return str(flag)
-
-    analysis(f,data,target,columns)
-    f.close()
+    analysis(f_name, data, target, columns)
+    f_name.close()
     return "Analysis.txt"
-
-
